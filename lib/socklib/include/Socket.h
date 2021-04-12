@@ -1,5 +1,5 @@
-#ifndef SIMTOCHAT_INCLUDE_SOCKET_SERVER_H
-#define SIMTOCHAT_INCLUDE_SOCKET_SERVER_H
+#ifndef SOCKLIB_INCLUDE_SOCKET_SERVER_H
+#define SOCKLIB_INCLUDE_SOCKET_SERVER_H
 
 #include <exception>
 #include <string>
@@ -172,4 +172,4 @@ bool Socket::Write(const T* dist, size_t n)
 }
 
 
-#endif // !SIMTOCHAT_INCLUDE_SOCKET_SERVER_H
+#endif // !SOCKLIB_INCLUDE_SOCKET_SERVER_H
