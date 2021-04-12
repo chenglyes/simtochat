@@ -3,6 +3,9 @@
 
 #include <exception>
 #include <string>
+#include <sys/socket.h>
+#include <sys/epoll.h>
+#include <map>
 
 struct sockaddr;
 struct sockaddr_in;
@@ -56,6 +59,7 @@ protected:
 
     int _epoll_create (int size);
     int _epoll_create1 (int flags);
+    int _epoll_wait(int epfd, epoll_event *events, int maxevents, int timeout);
     void _epoll_ctl (int epfd, int op, int fd, struct epoll_event *event);
 
 protected:
@@ -68,6 +72,7 @@ class Socket : public _SocketUtil
 {
 public:
     Socket();
+    Socket(int fd, const sockaddr_in& addr_in);
     virtual ~Socket();
 
 public:
@@ -117,7 +122,30 @@ protected:
 
 };
 
-#include <sys/socket.h>
+class EpollServer : public _SocketUtil
+{
+public:
+    EpollServer();
+    virtual ~EpollServer();
+
+public:
+    virtual void Run(int port);
+
+    void setAcceptor(bool (*acceptor)(Socket& client));
+    void setProcessor(bool (*processor)(Socket& client));
+
+protected:
+    void setnonblocking(int fd);
+    void addfd(int epfd, int fd, bool enable_et);
+
+protected:
+    bool m_running;
+    int m_epfd;
+    epoll_event m_events[128];
+    std::map<int, Socket> m_clientMap;
+    bool (*m_acceptor)(Socket& client);
+    bool (*m_processor)(Socket& client);
+};
 
 template<class T>
 bool Socket::Read(T& obj)

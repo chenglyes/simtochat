@@ -7,6 +7,8 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <unistd.h>
+#include <fcntl.h>
+#include <string.h>
 
 #define SOCKET_UTIL_EXCEPTION(errid, msg) if((msg)) throw SocketException(errid, __FILE__, __LINE__, #msg)
 
@@ -165,6 +167,13 @@ int _SocketUtil::_epoll_create1 (int flags)
     return rst;
 }
 
+int _SocketUtil::_epoll_wait(int epfd, epoll_event *events, int maxevents, int timeout)
+{
+    int count;
+    SOCKET_UTIL_EXCEPTION(0, -1 == (count = epoll_wait(epfd, events, maxevents, timeout)));
+    return count;
+}
+
 void _SocketUtil::_epoll_ctl (int epfd, int op, int fd, struct epoll_event *event)
 {
     SOCKET_UTIL_EXCEPTION(0, -1 == epoll_ctl(epfd, op, fd, event));
@@ -174,6 +183,13 @@ Socket::Socket()
     : _SocketUtil()
 {
 
+}
+
+Socket::Socket(int fd, const sockaddr_in& addr_in)
+    : _SocketUtil()
+{
+    m_fd = fd;
+    memcpy(m_addr, &addr_in, m_addrLen);
 }
 
 Socket::~Socket()
@@ -216,4 +232,84 @@ Socket SingleServer::Accept()
     Socket client;
     client.m_fd = _accept(m_fd, (sockaddr*)client.m_addr, &client.m_addrLen);
     return client;
+}
+
+EpollServer::EpollServer()
+    : m_running(true), m_epfd(0), m_events{0}, m_acceptor(nullptr), m_processor(nullptr)
+{
+
+}
+
+EpollServer::~EpollServer()
+{
+    close(m_epfd);
+    close(m_fd);
+}
+
+void EpollServer::Run(int port)
+{
+    m_fd = _socket(AF_INET, SOCK_STREAM, 0);
+    m_addr->sin_family = AF_INET;
+    m_addr->sin_port = htons(port);
+    m_addr->sin_addr.s_addr = INADDR_ANY;
+    _bind(m_fd, getpAddr(), m_addrLen);
+    _listen(m_fd, INT32_MAX);
+
+    m_epfd = _epoll_create(128);
+    addfd(m_epfd, m_fd, true);
+
+    while (m_running)
+    {
+        int count = epoll_wait(m_epfd, m_events, 128, -1);
+        for (size_t i = 0; i < count; i++)
+        {
+            int sockfd = m_events[i].data.fd;
+            if (sockfd == m_fd)
+            {
+                sockaddr_in addrClient;
+                socklen_t addrLen;
+                int clientfd = _accept(m_fd, (sockaddr*)&addrClient, &addrLen);
+                Socket client(clientfd, addrClient);
+                if (!m_acceptor) continue;
+                if (m_acceptor(client))
+                {
+                    addfd(m_epfd, clientfd, true);
+                    m_clientMap[clientfd] = client;
+                }
+            }
+            else
+            {
+                if (!m_processor) continue;
+                if (!m_processor(m_clientMap[sockfd]))
+                {
+                    m_clientMap.erase(sockfd);
+                }
+            }
+        }
+    }
+}
+
+void EpollServer::setAcceptor(bool (*acceptor)(Socket& client))
+{
+    m_acceptor = acceptor;
+}
+
+void EpollServer::setProcessor(bool (*processor)(Socket& client))
+{
+    m_processor = processor;
+}
+
+void EpollServer::setnonblocking(int fd)
+{
+    fcntl(fd, F_SETFL, fcntl(fd, F_GETFD, 0) | O_NONBLOCK);
+}
+
+void EpollServer::addfd(int epfd, int fd, bool enable_et)
+{
+    epoll_event ev;
+    ev.data.fd = fd;
+    ev.events = EPOLLIN;
+    if (enable_et) ev.events = EPOLLIN | EPOLLET;
+    _epoll_ctl(epfd, EPOLL_CTL_ADD, fd, &ev);
+    setnonblocking(fd);
 }
