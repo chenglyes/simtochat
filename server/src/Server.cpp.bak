@@ -1,0 +1,122 @@
+#include <sys/fcntl.h>
+
+#include <unistd.h>
+#include <string.h>
+#include <stdlib.h>
+
+#include <iostream>
+#include <map>
+
+#include "ServerConfig.h"
+#include "Utility.h"
+
+using namespace SimToChat;
+
+#define BUF_SIZE        1024
+
+struct ClientInfo
+{
+    int fd;
+    struct sockaddr_in addr;
+
+};
+
+void setnonblocking(int fd)
+{
+    fcntl(fd, F_SETFL, fcntl(fd, F_GETFD, 0) | O_NONBLOCK);
+}
+
+void addfd(int epfd, int fd, bool enable_et)
+{
+    struct epoll_event ev;
+    ev.data.fd = fd;
+    ev.events = EPOLLIN;
+    if (enable_et) ev.events = EPOLLIN | EPOLLET;
+    sepoll_ctl(epfd, EPOLL_CTL_ADD, fd, &ev);
+    setnonblocking(fd);
+}
+
+void broadcast(std::map<int, ClientInfo>& clients, int client, char* buf)
+{
+    //std::cout << client << std::endl;
+    for (auto cli : clients)
+    {
+        //std::cout << cli.first << std::endl;
+        if (cli.first != client)
+        {
+            send(cli.first, buf, BUF_SIZE, 0);
+        }
+    }
+}
+
+int main()
+{
+    int server;
+    struct sockaddr_in addr_server;
+
+    memset(&addr_server, 0, sizeof(addr_server));
+    addr_server.sin_family = AF_INET;
+    addr_server.sin_port = htons(SERVER_PORT);
+    addr_server.sin_addr.s_addr = INADDR_ANY;
+
+    try
+    {
+        server = ssocket(AF_INET, SOCK_STREAM, 0);
+        sbind(server, (struct sockaddr*)&addr_server, sizeof(addr_server));
+        slisten(server, 5000);
+
+        int epfd;
+        epfd = sepoll_create(EPOLL_SIZE);
+
+        struct epoll_event events[EPOLL_SIZE];
+        addfd(epfd, server, true);
+
+        std::map<int, struct ClientInfo> clientMap;
+
+        while (1)
+        {
+            int count = epoll_wait(epfd, events, EPOLL_SIZE, -1);
+            for (size_t i = 0; i < count; i++)
+            {
+                int sockfd = events[i].data.fd;
+
+                if (sockfd == server)
+                {
+                    ClientInfo client;
+                    socklen_t addrlen = sizeof(client.addr);
+                    client.fd = saccept(server, (struct sockaddr*)&client.addr, &addrlen);
+                    std::cout << inet_ntoa(client.addr.sin_addr) << " connected." << std::endl;
+                    addfd(epfd, client.fd, true);
+                    clientMap[client.fd] = client;
+                }
+                else
+                {
+                    char buf[BUF_SIZE];
+                    int len = recv(sockfd, buf, BUF_SIZE, 0);
+                    if (len == 0)
+                    {
+                        std::cout << inet_ntoa(clientMap[sockfd].addr.sin_addr) << " left." << std::endl;
+                        clientMap.erase(sockfd);
+                        close(sockfd);
+                    }
+                    else
+                    {
+                        broadcast(clientMap, sockfd, buf);
+                    }
+                }
+                
+            }
+            
+        }
+        
+    }
+    catch(const std::exception& e)
+    {
+        perror(e.what());
+        exit(1);
+    }
+    
+    close(server);
+
+    return 0;
+}
