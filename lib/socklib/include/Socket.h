@@ -1,11 +1,11 @@
 #ifndef SOCKLIB_INCLUDE_SOCKET_SERVER_H
 #define SOCKLIB_INCLUDE_SOCKET_SERVER_H
 
-#include <exception>
-#include <string>
 #include <sys/socket.h>
 #include <sys/epoll.h>
 #include <map>
+#include <exception>
+#include <string>
 
 struct sockaddr;
 struct sockaddr_in;
@@ -24,7 +24,7 @@ public:
     virtual const char* what() const noexcept override;
 
 public:
-    inline int getErrorId() const;
+    int getErrorId() const;
     std::string getErrorMsg() const;
 
 protected:
@@ -38,13 +38,13 @@ public:
     _SocketUtil();
     virtual ~_SocketUtil();
 public:
-    inline int getfd() const;
-    inline sockaddr_in getAddr_in() const;
-    inline const sockaddr* getpAddr() const;
-    inline std::string getIpStr() const;
-    inline int getPort() const;
+    int getfd() const;
+    sockaddr_in getAddr_in() const;
+    const sockaddr* getpAddr() const;
+    std::string getIpStr() const;
+    int getPort() const;
 
-    inline operator int() const;
+    operator int() const;
 
 protected:
     int _socket (int domain, int type, int protocol);
