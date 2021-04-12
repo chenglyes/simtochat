@@ -163,7 +163,7 @@ int _SocketUtil::_epoll_create (int size)
 int _SocketUtil::_epoll_create1 (int flags)
 {
     int rst;
-    SOCKET_UTIL_EXCEPTION(0, -1 == (epoll_create1(flags)));
+    SOCKET_UTIL_EXCEPTION(0, -1 == (rst = epoll_create1(flags)));
     return rst;
 }
 
