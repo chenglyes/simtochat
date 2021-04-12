@@ -267,7 +267,7 @@ void EpollServer::Run(int port)
             if (sockfd == m_fd)
             {
                 sockaddr_in addrClient;
-                socklen_t addrLen;
+                socklen_t addrLen = sizeof(addrClient);
                 int clientfd = _accept(m_fd, (sockaddr*)&addrClient, &addrLen);
                 Socket client(clientfd, addrClient);
                 if (!m_acceptor) continue;
