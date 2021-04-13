@@ -105,23 +105,6 @@ public:
     virtual Socket Accept();
 };
 
-class MultiThreadServer : public _SocketUtil
-{
-public:
-    MultiThreadServer();
-    virtual ~MultiThreadServer();
-
-public:
-    virtual void Run();
-
-protected:
-    static void* UserThread(void* aarg);
-
-protected:
-    bool m_running;
-
-};
-
 class EpollServer : public _SocketUtil
 {
 public:
