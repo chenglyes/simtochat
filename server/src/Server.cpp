@@ -5,16 +5,17 @@
 
 bool acceptor(Socket& client)
 {
-    std::cout << client.getIpStr() << " connect." << std::endl;
+    bool active = client.Write("Hello client.", 14);
     return true;
 }
 
 bool processor(Socket& client)
 {
-    bool active = client.Write("Hello client.", 14);
-    if (!active)
+    char buf[1024] = {0};
+    bool active = client.Read(buf, 1024);
+    if (active)
     {
-        std::cout << client.getIpStr() << " has left." << std::endl;
+        std::cout << client.getIpStr() << ": " << buf << std::endl;
     }
     return active;
 }
