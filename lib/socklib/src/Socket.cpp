@@ -156,7 +156,7 @@ void _SocketUtil::_close(int fd)
 int _SocketUtil::_epoll_create (int size)
 {
     int rst;
-    if (rst == -1) SOCKET_UTIL_EXCEPTION(0, -1 == (rst = epoll_create(size)));
+    SOCKET_UTIL_EXCEPTION(0, -1 == (rst = epoll_create(size)));
     return rst;
 }
 
