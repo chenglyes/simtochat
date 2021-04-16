@@ -4,7 +4,6 @@
 #include <sys/select.h>
 #include <sys/epoll.h>
 #include <sys/types.h>
-#include <netinet/in.h>
 #include <arpa/inet.h>
 #include <unistd.h>
 #include <fcntl.h>

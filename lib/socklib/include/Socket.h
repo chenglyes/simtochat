@@ -3,7 +3,7 @@
  * @Author: CGL
  * @Date: 2021-04-14 12:37:34
  * @LastEditors: CGL
- * @LastEditTime: 2021-04-16 13:55:50
+ * @LastEditTime: 2021-04-16 14:01:00
  * @Description: 
  *  Various TCP communication modes such as BIO and EPOLL + Reactor model.
  *  Socket: TCP socket. -> client  -Provide io interface;
@@ -15,6 +15,7 @@
 
 #include <sys/socket.h>
 #include <sys/epoll.h>
+#include <netinet/in.h>
 #include <map>
 #include <exception>
 #include <string>
