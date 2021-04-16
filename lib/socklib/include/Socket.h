@@ -3,7 +3,7 @@
  * @Author: CGL
  * @Date: 2021-04-14 12:37:34
  * @LastEditors: CGL
- * @LastEditTime: 2021-04-16 14:01:00
+ * @LastEditTime: 2021-04-16 14:08:57
  * @Description: 
  *  Various TCP communication modes such as BIO and EPOLL + Reactor model.
  *  Socket: TCP socket. -> client  -Provide io interface;
@@ -232,9 +232,6 @@ public:
      */
     template<class T>
     bool Write(const T* dist, size_t n);
-
-protected:
-    friend class SingleServer;
 };
 
 /**

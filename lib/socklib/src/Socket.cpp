@@ -228,9 +228,10 @@ void SingleServer::Listen(int port)
 
 Socket SingleServer::Accept()
 {
-    Socket client;
-    client.m_fd = _accept(m_fd, (sockaddr*)client.m_addr, &client.m_addrLen);
-    return client;
+    sockaddr_in addrClient = {0};
+    socklen_t addrLen = sizeof(addrClient);
+    int sockfd = _accept(m_fd, (sockaddr*)&addrClient, &addrLen);
+    return Socket(sockfd, addrClient);
 }
 
 EpollServer::EpollServer()
