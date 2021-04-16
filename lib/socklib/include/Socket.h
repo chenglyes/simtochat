@@ -3,7 +3,7 @@
  * @Author: CGL
  * @Date: 2021-04-14 12:37:34
  * @LastEditors: CGL
- * @LastEditTime: 2021-04-16 13:17:44
+ * @LastEditTime: 2021-04-16 13:55:50
  * @Description: 
  *  Various TCP communication modes such as BIO and EPOLL + Reactor model.
  *  Socket: TCP socket. -> client  -Provide io interface;
@@ -18,10 +18,6 @@
 #include <map>
 #include <exception>
 #include <string>
-
-struct sockaddr;
-struct sockaddr_in;
-typedef unsigned int socklen_t;
 
 /**
  * @class SocketException
