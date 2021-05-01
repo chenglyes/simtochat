@@ -1,12 +1,8 @@
 cmake_minimum_required(VERSION 3.0)
 
+include_directories(${PROJECT_SOURCE_DIR}/simtochat/include ${PROJECT_SOURCE_DIR}/util/include)
+link_libraries(util)
+
 include_directories(include)
-include_directories(${PROJECT_SOURCE_DIR}/lib/socklib/include)
-file(GLOB_RECURSE SRC src/*.c src/*.cpp)
-
-#link_directories(${PROJECT_SOURCE_DIR}/lib/socklib/lib)
-
-link_libraries(socklib)
-
-set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
-add_executable(server ${SRC})
+file(GLOB_RECURSE src *.c *.cpp)
+add_executable(server ${src})
