@@ -1,17 +1,17 @@
 /*
- * @FilePath: /simtochat/lib/socklib/include/Socket.h
+ * @FilePath: /simtochat/util/include/Socket.h
  * @Author: CGL
  * @Date: 2021-04-14 12:37:34
  * @LastEditors: CGL
- * @LastEditTime: 2021-04-16 14:08:57
+ * @LastEditTime: 2021-05-03 11:29:17
  * @Description: 
  *  Various TCP communication modes such as BIO and EPOLL + Reactor model.
  *  Socket: TCP socket. -> client  -Provide io interface;
  *  SingleServer: single-thread blocking-io tcp server -It can be extended to multithreading server.
  *  EpollServer: epoll + Reactor
  */
-#ifndef SOCKLIB_INCLUDE_SOCKET_SERVER_H
-#define SOCKLIB_INCLUDE_SOCKET_SERVER_H
+#ifndef UTIL_INCLUDE_SOCKET_SERVER_H
+#define UTIL_INCLUDE_SOCKET_SERVER_H
 
 #include <sys/socket.h>
 #include <sys/epoll.h>
@@ -345,4 +345,4 @@ bool Socket::Write(const T* dist, size_t n)
 }
 
 
-#endif // !SOCKLIB_INCLUDE_SOCKET_SERVER_H
+#endif // !UTIL_INCLUDE_SOCKET_SERVER_H
