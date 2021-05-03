@@ -1,3 +1,11 @@
+/*
+ * @FilePath: /simtochat/util/src/Socket.cpp
+ * @Author: CGL
+ * @Date: 2021-05-03 15:40:39
+ * @LastEditors: CGL
+ * @LastEditTime: 2021-05-03 15:40:45
+ * @Description: 
+ */
 #include "Socket.h"
 
 #include <sys/socket.h>
