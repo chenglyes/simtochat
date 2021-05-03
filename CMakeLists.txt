@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 3.0)
 
+project(SimToChat)
+
 if (NOT EXISTS ${PROJECT_SOURCE_DIR}/bin)
     execute_process(COMMAND mkdir ${PROJECT_SOURCE_DIR}/bin)
 endif()
