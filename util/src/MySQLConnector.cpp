@@ -3,7 +3,7 @@
  * @Author: CGL
  * @Date: 2021-05-03 15:40:09
  * @LastEditors: CGL
- * @LastEditTime: 2021-05-13 20:28:16
+ * @LastEditTime: 2021-05-13 21:47:05
  * @Description: 
  */
 #include "MySQLConnector.h"
@@ -46,7 +46,7 @@ char* MySQLResultSet::getData(unsigned int cols) const
     return m_rows[cols];
 }
 
-char* MySQLResultSet::operator[](unsigned int cols) const
+const char* MySQLResultSet::operator[](unsigned int cols) const
 {
     return getData(cols);
 }

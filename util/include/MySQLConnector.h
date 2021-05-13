@@ -3,7 +3,7 @@
  * @Author: CGL
  * @Date: 2021-05-03 11:27:24
  * @LastEditors: CGL
- * @LastEditTime: 2021-05-13 20:27:52
+ * @LastEditTime: 2021-05-13 21:47:15
  * @Description:
  *  Define tools to connect to the MySQL database.
  */
@@ -65,7 +65,7 @@ public:
      * @return Return the result string address of the specified column for the current row.
      * @description: Get the data for a column of the current row, returned as a string address.
      */
-    char* operator[](unsigned int cols) const;
+    const char* operator[](unsigned int cols) const;
     
     /**
      * @author: CGL
