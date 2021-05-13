@@ -10,5 +10,6 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/bin)
 
 add_subdirectory(simtochat)
 add_subdirectory(util)
-add_subdirectory(server)
-add_subdirectory(client)
+# add_subdirectory(server)
+# add_subdirectory(client)
+add_subdirectory(test)
