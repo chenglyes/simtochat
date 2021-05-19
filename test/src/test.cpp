@@ -3,34 +3,33 @@
  * @Author: CGL
  * @Date: 2021-05-13 20:39:02
  * @LastEditors: CGL
- * @LastEditTime: 2021-05-13 22:37:37
+ * @LastEditTime: 2021-05-19 22:09:24
  * @Description: 
  */
-#include "MySQLConnector.h"
+#include "ThreadPool.h"
 
 #include <iostream>
 using namespace std;
 
 int main()
 {
-    MySQLConnector connector;
-    connector.Setup("127.0.0.1", "root", "12321", "test");
-    try
-    {
-        connector.Connect();
-        connector.Excute("insert into test (name) values (\"小红\")");
-        MySQLResultSet rs = connector.ExcuteQuery("select * from test");
-        cout << rs.getFiledsNum() << ", " << rs.getRowsNum() << endl;
-        while (rs.NextRow())
-        {
-            cout << rs[0] << " " << rs[1] << endl;
-        }
-        
+    ThreadPool pool(4);
+    std::vector< std::future<int> > results;
+
+    for(int i = 0; i < 8; ++i) {
+        results.emplace_back(
+          pool.commit([i] {
+            std::cout << "hello " << i << std::endl;
+            std::this_thread::sleep_for(std::chrono::seconds(5));
+            std::cout << "world " << i << std::endl;
+            return i*i;
+        })
+      );
     }
-    catch(const MySQLException& e)
-    {
-        std::cerr << e.what() << '\n';
-    }
+
+    for(auto && result: results)
+        std::cout << result.get() << ' ';
+    std::cout << std::endl;
 
     return 0;
 }
