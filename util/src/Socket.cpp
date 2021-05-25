@@ -3,7 +3,7 @@
  * @Author: CGL
  * @Date: 2021-05-03 15:40:39
  * @LastEditors: CGL
- * @LastEditTime: 2021-05-25 19:25:15
+ * @LastEditTime: 2021-05-25 21:20:15
  * @Description: 
  */
 #include "Socket.h"
@@ -277,11 +277,10 @@ void EpollServer::Run(int port)
                 sockaddr_in addrClient;
                 socklen_t addrLen = sizeof(addrClient);
                 int clientfd = _accept(m_fd, (sockaddr*)&addrClient, &addrLen);
-                Socket client(clientfd, addrClient);
-                if (!m_acceptor) continue;
-                m_acceptor(client);
+                m_clientMap[clientfd] = Socket(clientfd, addrClient);
                 addfd(m_epfd, clientfd, true);
-                m_clientMap[clientfd] = client;
+                if (!m_acceptor) continue;
+                m_acceptor(m_clientMap[clientfd]);
             }
             else
             {
@@ -292,12 +291,12 @@ void EpollServer::Run(int port)
     }
 }
 
-void EpollServer::setAcceptor(std::function<bool(Socket&)> acceptor)
+void EpollServer::setAcceptor(std::function<void(Socket&)> acceptor)
 {
     m_acceptor = acceptor;
 }
 
-void EpollServer::setProcessor(std::function<bool(Socket&)> processor)
+void EpollServer::setProcessor(std::function<void(Socket&)> processor)
 {
     m_processor = processor;
 }

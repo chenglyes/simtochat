@@ -3,7 +3,7 @@
  * @Author: CGL
  * @Date: 2021-04-14 12:37:34
  * @LastEditors: CGL
- * @LastEditTime: 2021-05-25 19:18:19
+ * @LastEditTime: 2021-05-25 21:20:42
  * @Description: 
  *  Various TCP communication modes such as BIO and EPOLL + Reactor model.
  *  Socket: TCP socket. -> client  -Provide io interface;
@@ -296,14 +296,14 @@ public:
      * @param acceptor The callback will active when new client connect.
      * @description: Setup the acceptor callback.
      */
-    void setAcceptor(std::function<bool(Socket&)> acceptor);
+    void setAcceptor(std::function<void(Socket&)> acceptor);
 
     /**
      * @author: CGL
      * @param processor The callback will active when new messages arrived except for new client.
      * @description: Setup the processor callback.
      */
-    void setProcessor(std::function<bool(Socket&)> processor);
+    void setProcessor(std::function<void(Socket&)> processor);
 
 protected:
     // Set the file descriptor to non-blocking.
@@ -317,8 +317,8 @@ protected:
     int m_epfd;
     epoll_event m_events[128];      // Epoll size default = 128
     std::map<int, Socket> m_clientMap;
-    std::function<bool(Socket&)> m_acceptor;
-    std::function<bool(Socket&)> m_processor;
+    std::function<void(Socket&)> m_acceptor;
+    std::function<void(Socket&)> m_processor;
 };
 
 template<class T>
